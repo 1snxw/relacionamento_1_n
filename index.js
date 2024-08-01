@@ -11,6 +11,30 @@ app.use(express.urlencoded({extended:true}))
 app.use(express.json())
 app.use(cors())
 
+
+app.delete('/fabricante/:id', async (req,res)=>{
+    const dados = req.params
+    console.log(dados)
+    console.log(dados.id)
+    res.status(200).json({message:"dados recebidos"})
+})
+
+app.post('/produto', async(req,res)=>{
+    const dados = req.body
+    console.log(dados)
+    try{
+        if(dados.fabricanteid == 1){
+            const pesq = await Produto.create(dados, {raw:true})
+            res.status(200).json({message:"fabricante correto"})
+        }else{
+            res.status(404).json({message:"fabricante não existe"})
+        }
+    }catch(err){
+        console.error("erro ao cadastrar produto")
+        res.status(500).json({message:"erro ao cadastrar produto"})
+    }
+})
+
 app.get('/fabricante',async (req,res)=>{
     const dados = req.query
     console.log(dados)
