@@ -15,8 +15,22 @@ app.use(cors())
 app.delete('/fabricante/:id', async (req,res)=>{
     const dados = req.params
     console.log(dados)
-    console.log(dados.id)
-    res.status(200).json({message:"dados recebidos"})
+    const pesq = await Fabricante.findByPk(dados.id)
+    try{
+        if(pesq === null){
+            console.log(pesq)
+            res.status(404).json({message:"Fabricante inexistente no sistema"})
+        }else{
+            console.log(pesq)
+            await Fabricante.destroy({where:{codFabricante: dados.id}})
+            res.status(200).json({message:"Fabricante excluido!"})
+        }
+    }catch(err){
+        console.error("não foi possivel apagar os dados",err)
+        res.status(500).json({message:"não foi possivel apagar os dados"})
+    }
+    
+    
 })
 
 app.post('/produto', async(req,res)=>{
@@ -30,7 +44,7 @@ app.post('/produto', async(req,res)=>{
             res.status(404).json({message:"fabricante não existe"})
         }
     }catch(err){
-        console.error("erro ao cadastrar produto")
+        console.error("erro ao cadastrar produto",err)
         res.status(500).json({message:"erro ao cadastrar produto"})
     }
 })
@@ -54,6 +68,17 @@ app.get('/fabricante',async (req,res)=>{
     }
 })
 
+app.get('/fabricantes', async (req,res)=>{
+    try{
+    const pesq = await Fabricante.findAll()
+    res.status(200).json(pesq)
+    console.log(pesq)
+    }catch(err){
+        console.error('n]ao foi possivel listar os dados',err)
+        res.status(500).json({message:"não foi possível listar os dados"})
+    }
+})
+
 app.post('/fabricante',async (req,res)=>{
     const dados = req.body
     console.log(dados)
@@ -66,6 +91,14 @@ app.post('/fabricante',async (req,res)=>{
         res.status(500).json({message:"erro ao cadastrar produto"})
     }
 })
+
+app.put('/fabricante', async(req,res)=>{
+    const dados = req.body
+    console.log(dados)
+    const pesq = await Fabricante.findByPk(dados.codFabricante)
+    console.log(pesq)
+    res.status(200).json(pesq)
+} )
 
 app.get('/', (req,res)=>{
     res.status(200).json({message:"Aplicação rodando"})
